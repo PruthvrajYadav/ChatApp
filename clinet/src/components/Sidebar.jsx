@@ -14,39 +14,17 @@ const Sidebar = () => {
     const { logout, onlineUsers, authUser } = useContext(AuthContext)
 
     const [input, setInput] = useState("")
-    const [selectedChatIds, setSelectedChatIds] = useState([]) // For multiple selection
-    const [longPressTimer, setLongPressTimer] = useState(null)
-    const [isSelectionMode, setIsSelectionMode] = useState(false)
+    const [sidebarContextMenu, setSidebarContextMenu] = useState(null)
 
-    const handleLongPress = (id) => {
-        if (!isSelectionMode) setIsSelectionMode(true);
-        setSelectedChatIds(prev => {
-            if (prev.includes(id)) return prev.filter(item => item !== id)
-            return [...prev, id]
-        })
-        // Vibrate if supported
-        if (navigator.vibrate) navigator.vibrate(50);
-    }
-
-    const startPress = (id) => {
-        const timer = setTimeout(() => {
-            handleLongPress(id)
-        }, 500) // Reduced to 500ms for better mobile feel
-        setLongPressTimer(timer)
-    }
-
-    const endPress = () => {
-        if (longPressTimer) clearTimeout(longPressTimer)
-    }
-
-    const cancelSelection = () => {
-        setSelectedChatIds([])
-        setIsSelectionMode(false)
-    }
-
-    useEffect(() => {
-        if (selectedChatIds.length === 0) setIsSelectionMode(false);
-    }, [selectedChatIds])
+    const handleContextMenu = (e, id, isGroup) => {
+        e.preventDefault();
+        setSidebarContextMenu({
+            x: e.clientX,
+            y: e.clientY,
+            id: id,
+            isGroup: isGroup
+        });
+    };
 
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false)
     const [activeTab, setActiveTab] = useState('All')
@@ -76,129 +54,76 @@ const Sidebar = () => {
         return 0;
     });
 
+    useEffect(() => {
+        const handleClick = () => setSidebarContextMenu(null);
+        window.addEventListener('click', handleClick);
+        return () => window.removeEventListener('click', handleClick);
+    }, []);
+
     const navigate = useNavigate()
     return (
         <div 
-            onContextMenu={(e) => e.preventDefault()}
             className={`bg-transparent h-full p-5 pt-8 border-r border-[var(--border-color)] overflow-y-auto text-[var(--text-color)] ${selectedUser || selectedGroup ? "max-md:hidden" : ''} `}
         >
             <div className='pb-5'>
-                {isSelectionMode ? (
-                    <div className='flex items-center justify-between p-3 bg-violet-600/20 border border-violet-500/30 rounded-2xl animate-in slide-in-from-top duration-300 mb-6'>
-                        <div className='flex items-center gap-4'>
-                            <button onClick={cancelSelection} className='text-white text-xl hover:bg-white/10 w-8 h-8 rounded-lg transition-colors'>←</button>
-                            <span className='text-white font-bold text-lg'>{selectedChatIds.length}</span>
+                <div className='flex items-center justify-between mb-6'>
+                    <div className='flex items-center gap-2'>
+                        <div className='w-10 h-10 bg-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-600/20'>
+                            <img src={assets.logo_icon} alt="" className='w-6' />
                         </div>
-                        <div className='flex items-center gap-5 pr-2'>
-                            <button onClick={() => {
-                                if(window.confirm(`Delete ${selectedChatIds.length} chat(s)?`)) {
-                                    selectedChatIds.forEach(id => {
-                                        const isGrp = groups.some(g => String(g._id) === String(id));
-                                        deleteChat(id, isGrp);
-                                    });
-                                    cancelSelection();
-                                }
-                            }} title="Delete" className='text-xl hover:scale-125 transition-transform'>🗑️</button>
-                            
+                        <h1 className='text-xl font-black bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent'>QuickChat</h1>
+                    </div>
+
+                    <div className='flex items-center gap-3'>
+                        <div className='relative'>
                             <button 
-                                onClick={() => {
-                                    selectedChatIds.forEach(id => {
-                                        const isGrp = groups.some(g => String(g._id) === String(id));
-                                        pinChat(id, isGrp);
-                                    });
-                                    cancelSelection();
-                                }} 
-                                title="Pin/Unpin" 
-                                className='text-xl hover:scale-125 transition-transform'
-                            >📌</button>
-                            
-                            <button 
-                                onClick={() => {
-                                    selectedChatIds.forEach(id => {
-                                        const isGrp = groups.some(g => String(g._id) === String(id));
-                                        muteChat(id, isGrp);
-                                    });
-                                    cancelSelection();
-                                }} 
-                                title="Mute/Unmute" 
-                                className='text-xl hover:scale-125 transition-transform'
-                            >🔇</button>
-                            
-                            <button onClick={cancelSelection} title="Close" className='text-xl hover:scale-125 transition-transform ml-2'>✕</button>
+                                onClick={() => setIsFabOpen(!isFabOpen)}
+                                className={`w-8 h-8 bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 rounded-xl flex items-center justify-center transition-all ${isFabOpen ? 'rotate-[135deg] bg-violet-600 text-white shadow-lg shadow-violet-600/20' : ''}`}
+                                title="New Chat/Group"
+                            >
+                                <span className='text-xl font-light'>+</span>
+                            </button>
+
+                            {isFabOpen && (
+                                <div className='absolute top-full right-0 z-50 w-48 mt-2 p-2 rounded-2xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
+                                    <div onClick={() => {setIsGroupModalOpen(true); setIsFabOpen(false)}} className='flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer text-sm transition-colors group'>
+                                        <div className='w-8 h-8 bg-white/5 group-hover:bg-violet-600/20 rounded-lg flex items-center justify-center transition-colors text-xs'>👥</div>
+                                        New Group
+                                    </div>
+                                    <div onClick={() => {setIsSearchModalOpen(true); setIsFabOpen(false)}} className='flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer text-sm transition-colors group'>
+                                        <div className='w-8 h-8 bg-white/5 group-hover:bg-violet-600/20 rounded-lg flex items-center justify-center transition-colors text-xs'>👤</div>
+                                        New Contact
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className='relative'>
+                            <img onClick={() => setShowMenu(prev => !prev)} src={assets.menu_icon} alt="" className='w-5 opacity-60 hover:opacity-100 cursor-pointer transition-all' />
+                            {showMenu && (
+                                <div className='absolute top-full right-0 z-50 w-40 mt-2 p-2 rounded-xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
+                                    <p onClick={() => { navigate('/profile'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>👤 Edit Profile</p>
+                                    <p onClick={() => { navigate('/settings'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>⚙️ Settings</p>
+                                    <hr className='my-1 border-white/5' />
+                                    <p onClick={() => { logout() }} className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>Logout</p>
+                                </div>
+                            )}
                         </div>
                     </div>
-                ) : (
-                    <>
-                        <div className='flex items-center justify-between mb-6'>
-                            <div className='flex items-center gap-2'>
-                                <div className='w-10 h-10 bg-violet-600 rounded-2xl flex items-center justify-center shadow-lg shadow-violet-600/20'>
-                                    <img src={assets.logo_icon} alt="" className='w-6' />
-                                </div>
-                                <h1 className='text-xl font-black bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent'>QuickChat</h1>
-                            </div>
+                </div>
 
-                            <div className='flex items-center gap-3'>
-                                <div className='relative'>
-                                    <button 
-                                        onClick={() => setIsFabOpen(!isFabOpen)}
-                                        className={`w-8 h-8 bg-violet-600/20 hover:bg-violet-600/40 text-violet-400 rounded-xl flex items-center justify-center transition-all ${isFabOpen ? 'rotate-[135deg] bg-violet-600 text-white shadow-lg shadow-violet-600/20' : ''}`}
-                                        title="New Chat/Group"
-                                    >
-                                        <span className='text-xl font-light'>+</span>
-                                    </button>
+                <div className='bg-[var(--input-bg)] border border-[var(--border-color)] rounded-2xl flex items-center gap-3 py-3 px-4 mb-4 focus-within:bg-white/10 transition-all'>
+                    <img src={assets.search_icon} alt="" className='w-3.5 opacity-50' />
+                    <input type="text" onChange={(e)=>setInput(e.target.value)} className='bg-transparent border-none outline-none text-white text-sm placeholder-gray-500 flex-1' placeholder='Search messages or users...' />
+                </div>
 
-                                    {isFabOpen && (
-                                        <div className='absolute top-full right-0 z-50 w-48 mt-2 p-2 rounded-2xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
-                                            <div onClick={() => {setIsGroupModalOpen(true); setIsFabOpen(false)}} className='flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer text-sm transition-colors group'>
-                                                <div className='w-8 h-8 bg-white/5 group-hover:bg-violet-600/20 rounded-lg flex items-center justify-center transition-colors text-xs'>👥</div>
-                                                New Group
-                                            </div>
-                                            <div onClick={() => {setIsSearchModalOpen(true); setIsFabOpen(false)}} className='flex items-center gap-3 p-3 hover:bg-white/5 rounded-xl cursor-pointer text-sm transition-colors group'>
-                                                <div className='w-8 h-8 bg-white/5 group-hover:bg-violet-600/20 rounded-lg flex items-center justify-center transition-colors text-xs'>👤</div>
-                                                New Contact
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className='relative'>
-                                    <button 
-                                        onClick={() => setIsSelectionMode(!isSelectionMode)}
-                                        className={`w-8 h-8 ${isSelectionMode ? 'bg-violet-600 text-white' : 'bg-violet-600/20 text-violet-400'} hover:bg-violet-600/40 rounded-xl flex items-center justify-center transition-all`}
-                                        title="Select Chats"
-                                    >
-                                        <span className='text-sm'>✅</span>
-                                    </button>
-                                </div>
-
-                                <div className='relative'>
-                                    <img onClick={() => setShowMenu(prev => !prev)} src={assets.menu_icon} alt="" className='w-5 opacity-60 hover:opacity-100 cursor-pointer transition-all' />
-                                    {showMenu && (
-                                        <div className='absolute top-full right-0 z-50 w-40 mt-2 p-2 rounded-xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
-                                            <p onClick={() => { navigate('/profile'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>👤 Edit Profile</p>
-                                            <p onClick={() => { navigate('/settings'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>⚙️ Settings</p>
-                                            <hr className='my-1 border-white/5' />
-                                            <p onClick={() => { logout() }} className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>Logout</p>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className='bg-[var(--input-bg)] border border-[var(--border-color)] rounded-2xl flex items-center gap-3 py-3 px-4 mb-4 focus-within:bg-white/10 transition-all'>
-                            <img src={assets.search_icon} alt="" className='w-3.5 opacity-50' />
-                            <input type="text" onChange={(e)=>setInput(e.target.value)} className='bg-transparent border-none outline-none text-white text-sm placeholder-gray-500 flex-1' placeholder='Search messages or users...' />
-                        </div>
-
-                        <div className='flex items-center gap-2 mb-6 bg-black/20 p-1 rounded-xl'>
-                            {['All', 'Unread', 'Groups'].map(tab => (
-                                <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === tab ? 'bg-violet-600 text-white shadow-md' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}`}>
-                                    {tab}
-                                </button>
-                            ))}
-                        </div>
-                    </>
-                )}
+                <div className='flex items-center gap-2 mb-6 bg-black/20 p-1 rounded-xl'>
+                    {['All', 'Unread', 'Groups'].map(tab => (
+                        <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all ${activeTab === tab ? 'bg-violet-600 text-white shadow-md' : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'}`}>
+                            {tab}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {(activeTab === 'All' || activeTab === 'Groups') && (
@@ -220,19 +145,9 @@ const Sidebar = () => {
                     {sortedGroups.map((group, index) => (
                         <div 
                             key={index} 
-                            onClick={() => {
-                                if (isSelectionMode) handleLongPress(group._id)
-                                else {setSelectedUser(null); setSelectedGroup(group); getGroupMessages(group._id)}
-                            }}
-                            onMouseDown={() => startPress(group._id)}
-                            onMouseUp={endPress}
-                            onTouchStart={() => startPress(group._id)}
-                            onTouchEnd={endPress}
-                            onContextMenu={(e) => {
-                                e.preventDefault();
-                                handleLongPress(group._id);
-                            }}
-                            className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${selectedChatIds.includes(group._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent')}`}
+                            onClick={() => {setSelectedUser(null); setSelectedGroup(group); getGroupMessages(group._id)}}
+                            onContextMenu={(e) => handleContextMenu(e, group._id, true)}
+                            className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${(sidebarContextMenu?.id === group._id) ? 'bg-violet-600/10' : (selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent')}`}
                         >
                             <div className='relative'>
                                 <img 
@@ -244,11 +159,6 @@ const Sidebar = () => {
                                     alt="" 
                                     className='w-10 h-10 rounded-full object-cover border border-white/10 hover:scale-110 transition-transform cursor-pointer' 
                                 />
-                                {isSelectionMode && (
-                                    <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-stone-900 flex items-center justify-center text-[10px] ${selectedChatIds.includes(group._id) ? 'bg-green-500 text-white' : 'bg-gray-700'}`}>
-                                        {selectedChatIds.includes(group._id) ? '✓' : ''}
-                                    </div>
-                                )}
                             </div>
                             <div className='flex-1 min-w-0'>
                                 <div className='flex items-center gap-1.5'>
@@ -283,20 +193,10 @@ const Sidebar = () => {
                 ) : (
                     filterUSers.map((user, index) => (
                         <div 
-                            onClick={() => { 
-                                if (isSelectionMode) handleLongPress(user._id)
-                                else {setSelectedUser(user); setSelectedGroup(null); getMessages(user._id); setUnseenMessage(prev=>({...prev,[user._id]:0}))}
-                            }}
-                            onMouseDown={() => startPress(user._id)}
-                            onMouseUp={endPress}
-                            onTouchStart={() => startPress(user._id)}
-                            onTouchEnd={endPress}
-                            onContextMenu={(e) => {
-                                e.preventDefault();
-                                handleLongPress(user._id);
-                            }}
+                            onClick={() => { setSelectedUser(user); setSelectedGroup(null); getMessages(user._id); setUnseenMessage(prev=>({...prev,[user._id]:0}))}}
+                            onContextMenu={(e) => handleContextMenu(e, user._id, false)}
                             key={index} 
-                            className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${selectedChatIds.includes(user._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent')}`}
+                            className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${(sidebarContextMenu?.id === user._id) ? 'bg-violet-600/10' : (selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent')}`}
                         >
                             <div className='relative'>
                                 <img 
@@ -310,11 +210,6 @@ const Sidebar = () => {
                                 />
                                 {onlineUsers?.includes(user._id) && (
                                     <span className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-stone-900 rounded-full'></span>
-                                )}
-                                {isSelectionMode && (
-                                    <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-stone-900 flex items-center justify-center text-[10px] ${selectedChatIds.includes(user._id) ? 'bg-green-500 text-white' : 'bg-gray-700'}`}>
-                                        {selectedChatIds.includes(user._id) ? '✓' : ''}
-                                    </div>
                                 )}
                             </div>
                             <div className='flex-1 min-w-0'>
@@ -346,6 +241,38 @@ const Sidebar = () => {
 
             <SearchContactModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
             
+            {sidebarContextMenu && (
+                <div 
+                    className='fixed bg-[#232323] border border-white/10 rounded-xl shadow-2xl py-2 min-w-[200px] z-[9999] animate-in fade-in zoom-in-95 duration-200 overflow-hidden'
+                    style={{ top: sidebarContextMenu.y, left: sidebarContextMenu.x }}
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>📥</span> Archive chat</div>
+                    
+                    <div onClick={() => {muteChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors'>
+                        <span className='text-lg w-5'>🔇</span> Mute notifications
+                    </div>
+                    
+                    <div onClick={() => {pinChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors'>
+                        <span className='text-lg w-5'>📌</span> Pin chat
+                    </div>
+                    
+                    <div className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>📩</span> Mark as unread</div>
+                    
+                    <div className='h-[1px] bg-white/10 my-1'></div>
+                    
+                    <div className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>🚫</span> Block</div>
+                    
+                    <div onClick={() => { if(window.confirm('Clear chat?')) clearChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors'>
+                        <span className='text-lg w-5'>🧹</span> Clear chat
+                    </div>
+                    
+                    <div onClick={() => { if(window.confirm('Delete chat?')) deleteChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-red-400 flex items-center gap-3 transition-colors'>
+                        <span className='text-lg w-5'>🗑️</span> Delete chat
+                    </div>
+                </div>
+            )}
+
             {selectedImage && (
                 <div 
                     className='fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300'
