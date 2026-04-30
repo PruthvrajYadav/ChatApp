@@ -318,8 +318,8 @@ const Sidebar = () => {
                                     {user.isPinned && <span className='text-[10px]' title="Pinned">📌</span>}
                                     {user.isMuted && <span className='text-[10px]' title="Muted">🔇</span>}
                                 </div>
-                                <p className={`text-[10px] truncate ${typingUser === user._id ? 'text-green-400 font-bold animate-pulse' : (onlineUsers?.includes(user._id) ? 'text-green-400 font-medium' : 'text-gray-500')}`}>
-                                    {typingUser === user._id ? 'typing...' : (user.status || (onlineUsers?.includes(user._id) ? 'Online' : 'Offline'))}
+                                <p className={`text-[10px] truncate ${typingUser === user._id ? 'text-green-400 font-bold animate-pulse' : 'text-gray-500'}`}>
+                                    {typingUser === user._id ? 'typing...' : (user.bio || 'Hey there! I am using QuickChat')}
                                 </p>
                             </div>
                             {unseenMessage[user._id] > 0 && (
