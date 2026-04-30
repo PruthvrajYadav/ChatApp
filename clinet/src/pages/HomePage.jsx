@@ -10,7 +10,7 @@ const HomePage = () => {
     const isChatOpen = selectedUser || selectedGroup;
 
     return (
-        <div className='w-full h-screen md:px-[5%] md:pt-10 md:pb-5 bg-[var(--bg-color)] relative overflow-hidden transition-all duration-700'>
+        <div className='w-full h-screen px-2 sm:px-[5%] pt-5 md:pt-10 pb-5 bg-[var(--bg-color)] relative overflow-hidden transition-all duration-700'>
             {/* Animated Background Blobs */}
             <div className='absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-violet-600/20 blur-[120px] rounded-full animate-pulse hidden md:block'></div>
             <div className='absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full animate-pulse delay-700 hidden md:block'></div>
