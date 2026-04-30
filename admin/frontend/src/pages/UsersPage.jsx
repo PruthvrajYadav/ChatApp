@@ -13,7 +13,7 @@ const UsersPage = () => {
     const fetchUsers = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:6001/api/admin/users', {
+            const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL}/users`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -34,7 +34,7 @@ const UsersPage = () => {
         if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
         
         try {
-            const res = await axios.delete(`http://localhost:6001/api/admin/users/${id}`, {
+            const res = await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL}/users/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

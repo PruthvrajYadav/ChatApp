@@ -12,7 +12,7 @@ const GroupsPage = () => {
     const fetchGroups = async () => {
         setLoading(true);
         try {
-            const res = await axios.get('http://localhost:6001/api/admin/groups', {
+            const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL}/groups`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -33,7 +33,7 @@ const GroupsPage = () => {
         if (!window.confirm('Are you sure you want to delete this group?')) return;
         
         try {
-            const res = await axios.delete(`http://localhost:6001/api/admin/groups/${id}`, {
+            const res = await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL}/groups/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

@@ -13,7 +13,7 @@ const AdminLoginPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:6001/api/admin/login', { email, password });
+            const res = await axios.post(`${import.meta.env.VITE_ADMIN_API_URL}/login`, { email, password });
             if (res.data.success) {
                 login(res.data.token);
                 toast.success('Admin Login Successful');

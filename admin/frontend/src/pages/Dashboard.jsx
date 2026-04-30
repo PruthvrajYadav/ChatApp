@@ -11,7 +11,7 @@ const Dashboard = () => {
     useEffect(() => {
         const fetchStats = async () => {
             try {
-                const res = await axios.get('http://localhost:6001/api/admin/stats', {
+                const res = await axios.get(`${import.meta.env.VITE_ADMIN_API_URL}/stats`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.data.success) {
