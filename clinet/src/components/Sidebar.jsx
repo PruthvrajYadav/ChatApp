@@ -16,18 +16,22 @@ const Sidebar = () => {
     const [input, setInput] = useState("")
     const [selectedChatIds, setSelectedChatIds] = useState([]) // For multiple selection
     const [longPressTimer, setLongPressTimer] = useState(null)
+    const [isSelectionMode, setIsSelectionMode] = useState(false)
 
-    const handleLongPress = (id, isGroup) => {
+    const handleLongPress = (id) => {
+        if (!isSelectionMode) setIsSelectionMode(true);
         setSelectedChatIds(prev => {
             if (prev.includes(id)) return prev.filter(item => item !== id)
             return [...prev, id]
         })
+        // Vibrate if supported
+        if (navigator.vibrate) navigator.vibrate(50);
     }
 
-    const startPress = (id, isGroup) => {
+    const startPress = (id) => {
         const timer = setTimeout(() => {
-            handleLongPress(id, isGroup)
-        }, 600) // 600ms for long press
+            handleLongPress(id)
+        }, 500) // Reduced to 500ms for better mobile feel
         setLongPressTimer(timer)
     }
 
@@ -37,7 +41,13 @@ const Sidebar = () => {
 
     const cancelSelection = () => {
         setSelectedChatIds([])
+        setIsSelectionMode(false)
     }
+
+    useEffect(() => {
+        if (selectedChatIds.length === 0) setIsSelectionMode(false);
+    }, [selectedChatIds])
+
     const [isGroupModalOpen, setIsGroupModalOpen] = useState(false)
     const [activeTab, setActiveTab] = useState('All')
 
@@ -73,7 +83,7 @@ const Sidebar = () => {
             className={`bg-transparent h-full p-5 pt-8 border-r border-[var(--border-color)] overflow-y-auto text-[var(--text-color)] ${selectedUser || selectedGroup ? "max-md:hidden" : ''} `}
         >
             <div className='pb-5'>
-                {selectedChatIds.length > 0 ? (
+                {isSelectionMode ? (
                     <div className='flex items-center justify-between p-3 bg-violet-600/20 border border-violet-500/30 rounded-2xl animate-in slide-in-from-top duration-300 mb-6'>
                         <div className='flex items-center gap-4'>
                             <button onClick={cancelSelection} className='text-white text-xl hover:bg-white/10 w-8 h-8 rounded-lg transition-colors'>←</button>
@@ -157,6 +167,7 @@ const Sidebar = () => {
                                         <div className='absolute top-full right-0 z-50 w-40 mt-2 p-2 rounded-xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
                                             <p onClick={() => { navigate('/profile'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>👤 Edit Profile</p>
                                             <p onClick={() => { navigate('/settings'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>⚙️ Settings</p>
+                                            <p onClick={() => { setIsSelectionMode(true); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>✅ Select Chats</p>
                                             <hr className='my-1 border-white/5' />
                                             <p onClick={() => { logout() }} className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>Logout</p>
                                         </div>
@@ -201,18 +212,18 @@ const Sidebar = () => {
                         <div 
                             key={index} 
                             onClick={() => {
-                                if (selectedChatIds.length > 0) handleLongPress(group._id, true)
+                                if (isSelectionMode) handleLongPress(group._id)
                                 else {setSelectedUser(null); setSelectedGroup(group); getGroupMessages(group._id)}
                             }}
-                            onMouseDown={() => startPress(group._id, true)}
+                            onMouseDown={() => startPress(group._id)}
                             onMouseUp={endPress}
-                            onTouchStart={() => startPress(group._id, true)}
+                            onTouchStart={() => startPress(group._id)}
                             onTouchEnd={endPress}
                             onContextMenu={(e) => {
                                 e.preventDefault();
-                                handleLongPress(group._id, true);
+                                handleLongPress(group._id);
                             }}
-                            className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedChatIds.includes(group._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent')}`}
+                            className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${selectedChatIds.includes(group._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent')}`}
                         >
                             <div className='relative'>
                                 <img 
@@ -224,6 +235,11 @@ const Sidebar = () => {
                                     alt="" 
                                     className='w-10 h-10 rounded-full object-cover border border-white/10 hover:scale-110 transition-transform cursor-pointer' 
                                 />
+                                {isSelectionMode && (
+                                    <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-stone-900 flex items-center justify-center text-[10px] ${selectedChatIds.includes(group._id) ? 'bg-green-500 text-white' : 'bg-gray-700'}`}>
+                                        {selectedChatIds.includes(group._id) ? '✓' : ''}
+                                    </div>
+                                )}
                             </div>
                             <div className='flex-1 min-w-0'>
                                 <div className='flex items-center gap-1.5'>
@@ -259,19 +275,19 @@ const Sidebar = () => {
                     filterUSers.map((user, index) => (
                         <div 
                             onClick={() => { 
-                                if (selectedChatIds.length > 0) handleLongPress(user._id, false)
+                                if (isSelectionMode) handleLongPress(user._id)
                                 else {setSelectedUser(user); setSelectedGroup(null); getMessages(user._id); setUnseenMessage(prev=>({...prev,[user._id]:0}))}
                             }}
-                            onMouseDown={() => startPress(user._id, false)}
+                            onMouseDown={() => startPress(user._id)}
                             onMouseUp={endPress}
-                            onTouchStart={() => startPress(user._id, false)}
+                            onTouchStart={() => startPress(user._id)}
                             onTouchEnd={endPress}
                             onContextMenu={(e) => {
                                 e.preventDefault();
-                                handleLongPress(user._id, false);
+                                handleLongPress(user._id);
                             }}
                             key={index} 
-                            className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedChatIds.includes(user._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent')}`}
+                            className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all active:scale-[0.98] ${selectedChatIds.includes(user._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent')}`}
                         >
                             <div className='relative'>
                                 <img 
@@ -285,6 +301,11 @@ const Sidebar = () => {
                                 />
                                 {onlineUsers.includes(user._id) && (
                                     <span className='absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-stone-900 rounded-full'></span>
+                                )}
+                                {isSelectionMode && (
+                                    <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full border-2 border-stone-900 flex items-center justify-center text-[10px] ${selectedChatIds.includes(user._id) ? 'bg-green-500 text-white' : 'bg-gray-700'}`}>
+                                        {selectedChatIds.includes(user._id) ? '✓' : ''}
+                                    </div>
                                 )}
                             </div>
                             <div className='flex-1 min-w-0'>
