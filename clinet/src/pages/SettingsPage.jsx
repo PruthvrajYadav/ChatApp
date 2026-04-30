@@ -12,6 +12,7 @@ const SettingsPage = () => {
 
     const [activeSection, setActiveSection] = useState(null)
     const [wallpaper, setWallpaper] = useState(authUser.wallpaper || "")
+    const [notifEnabled, setNotifEnabled] = useState(true)
 
     const sections = [
         { id: 'profile', icon: '👤', title: 'Profile', desc: 'Name, Bio, Profile Photo', path: '/profile' },
@@ -104,46 +105,85 @@ const SettingsPage = () => {
             </div>
 
             {/* Section Modals/Overlays */}
-            {activeSection === 'chats' && (
+            {activeSection && (
                 <div className='fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300'>
                     <div className='w-full max-w-md bg-stone-900 border border-white/10 rounded-3xl p-8 animate-in zoom-in-95 duration-300'>
                         <div className='flex justify-between items-center mb-6'>
-                            <h2 className='text-xl font-bold'>Chat Settings</h2>
+                            <h2 className='text-xl font-bold capitalize'>{activeSection} Settings</h2>
                             <button onClick={() => setActiveSection(null)} className='text-2xl'>&times;</button>
                         </div>
 
-                        <div className='space-y-6'>
-                            <div>
-                                <label className='text-xs font-bold text-gray-500 uppercase tracking-widest block mb-3'>Chat Wallpaper</label>
-                                <div className='relative group h-40 rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center'>
-                                    {wallpaper ? (
-                                        <img src={wallpaper} className='w-full h-full object-cover opacity-60' alt="" />
-                                    ) : (
-                                        <div className='text-gray-600 text-sm'>No wallpaper set</div>
-                                    )}
-                                    <label className='absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'>
-                                        <span className='bg-violet-600 px-4 py-2 rounded-lg text-xs font-bold'>Change Wallpaper</span>
-                                        <input type="file" hidden accept="image/*" onChange={handleWallpaperChange} />
-                                    </label>
+                        {activeSection === 'chats' && (
+                            <div className='space-y-6'>
+                                <div>
+                                    <label className='text-xs font-bold text-gray-500 uppercase tracking-widest block mb-3'>Chat Wallpaper</label>
+                                    <div className='relative group h-40 rounded-2xl overflow-hidden border border-white/10 bg-black/40 flex items-center justify-center'>
+                                        {wallpaper ? (
+                                            <img src={wallpaper} className='w-full h-full object-cover opacity-60' alt="" />
+                                        ) : (
+                                            <div className='text-gray-600 text-sm'>No wallpaper set</div>
+                                        )}
+                                        <label className='absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'>
+                                            <span className='bg-violet-600 px-4 py-2 rounded-lg text-xs font-bold'>Change Wallpaper</span>
+                                            <input type="file" hidden accept="image/*" onChange={handleWallpaperChange} />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
+                        )}
 
-                            <button onClick={() => setActiveSection(null)} className='w-full py-4 bg-violet-600 rounded-2xl font-bold text-sm'>Done</button>
-                        </div>
-                    </div>
-                </div>
-            )}
+                        {activeSection === 'notifications' && (
+                            <div className='space-y-6'>
+                                <div className='flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5'>
+                                    <div>
+                                        <p className='text-sm text-white font-medium'>Conversation Tones</p>
+                                        <p className='text-[10px] text-gray-500'>Play sounds for incoming messages</p>
+                                    </div>
+                                    <button 
+                                        onClick={() => setNotifEnabled(!notifEnabled)}
+                                        className={`w-12 h-6 rounded-full transition-all relative ${notifEnabled ? 'bg-violet-600' : 'bg-gray-700'}`}
+                                    >
+                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${notifEnabled ? 'left-7' : 'left-1'}`}></div>
+                                    </button>
+                                </div>
+                                <div className='flex items-center justify-between p-4 bg-white/5 rounded-2xl border border-white/5'>
+                                    <div>
+                                        <p className='text-sm text-white font-medium'>Vibrate</p>
+                                        <p className='text-[10px] text-gray-500'>Vibrate on message</p>
+                                    </div>
+                                    <span className='text-xs text-violet-400'>Default</span>
+                                </div>
+                            </div>
+                        )}
 
-            {/* Privacy Section Placeholder */}
-            {activeSection === 'privacy' && (
-                <div className='fixed inset-0 bg-black/80 backdrop-blur-md z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300'>
-                    <div className='w-full max-w-md bg-stone-900 border border-white/10 rounded-3xl p-8 animate-in zoom-in-95 duration-300'>
-                        <div className='flex justify-between items-center mb-6'>
-                            <h2 className='text-xl font-bold'>Privacy Settings</h2>
-                            <button onClick={() => setActiveSection(null)} className='text-2xl'>&times;</button>
-                        </div>
-                        <p className='text-gray-400 text-sm mb-6'>Additional privacy options coming soon!</p>
-                        <button onClick={() => navigate('/profile')} className='w-full py-4 bg-violet-600 rounded-2xl font-bold text-sm'>Go to Profile Settings</button>
+                        {activeSection === 'privacy' && (
+                            <div className='space-y-4'>
+                                <p className='text-gray-400 text-sm'>Privacy options can be managed in your Profile settings.</p>
+                                <button onClick={() => navigate('/profile')} className='w-full py-4 bg-violet-600/20 text-violet-400 border border-violet-500/20 rounded-2xl font-bold text-sm hover:bg-violet-600 hover:text-white transition-all'>Go to Profile Settings</button>
+                            </div>
+                        )}
+
+                        {activeSection === 'help' && (
+                            <div className='space-y-4'>
+                                <div className='p-4 bg-white/5 rounded-2xl border border-white/5 space-y-4'>
+                                    <div className='flex items-center gap-3'>
+                                        <span className='text-xl'>📖</span>
+                                        <div className='text-sm font-medium'>Help Center</div>
+                                    </div>
+                                    <div className='flex items-center gap-3'>
+                                        <span className='text-xl'>✉️</span>
+                                        <div className='text-sm font-medium'>Contact us</div>
+                                    </div>
+                                    <div className='flex items-center gap-3'>
+                                        <span className='text-xl'>📄</span>
+                                        <div className='text-sm font-medium'>Terms and Privacy Policy</div>
+                                    </div>
+                                </div>
+                                <p className='text-[10px] text-center text-gray-600 mt-4'>QuickChat version 2.0.1 (Beta)</p>
+                            </div>
+                        )}
+
+                        <button onClick={() => setActiveSection(null)} className='w-full py-4 bg-white/5 hover:bg-white/10 rounded-2xl font-bold text-sm mt-6 transition-all'>Close</button>
                     </div>
                 </div>
             )}
