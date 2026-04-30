@@ -107,7 +107,7 @@ app.use("/api/auth", userRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/groups", groupRouter);
 
-
+if(process.env.NODE_ENV!=="production"){
 // connect DB & start server
 const PORT = process.env.PORT || 5000;
 
@@ -121,3 +121,7 @@ connectDB()
     .catch((err) => {
         console.error("Failed to connect DB:", err.message);
     });
+}
+
+//export server for vercel
+export default server;
