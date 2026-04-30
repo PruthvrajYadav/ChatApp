@@ -20,12 +20,17 @@ export const getStats = async (req, res) => {
         const messageCount = await Message.countDocuments();
         const groupCount = await Group.countDocuments();
         
+        // Calculate active users (active in the last 10 minutes)
+        const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+        const activeUsers = await User.countDocuments({ lastSeen: { $gte: tenMinutesAgo } });
+        
         res.json({
             success: true,
             stats: {
                 users: userCount,
                 messages: messageCount,
-                groups: groupCount
+                groups: groupCount,
+                active: activeUsers
             }
         });
     } catch (error) {

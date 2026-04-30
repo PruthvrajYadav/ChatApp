@@ -34,14 +34,14 @@ const Dashboard = () => {
         <div className="space-y-10">
             <header>
                 <h1 className="text-4xl font-extrabold tracking-tight">System Overview</h1>
-                <p className="text-gray-400 mt-2">Real-time monitoring and system metrics</p>
+                <p className="text-gray-400 mt-2">Real-time monitoring and system metrics from database</p>
             </header>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard icon={<Users size={24} />} label="Total Users" value={stats.users} trend="+12%" color="blue" />
-                <StatCard icon={<MessageSquare size={24} />} label="Messages" value={stats.messages} trend="+5%" color="green" />
-                <StatCard icon={<ShieldCheck size={24} />} label="Groups" value={stats.groups} trend="+2%" color="purple" />
-                <StatCard icon={<Activity size={24} />} label="Active Now" value="42" trend="Live" color="orange" />
+                <StatCard icon={<Users size={24} />} label="Total Users" value={stats.users} trend="Total" color="blue" />
+                <StatCard icon={<MessageSquare size={24} />} label="Messages" value={stats.messages} trend="Live" color="green" />
+                <StatCard icon={<ShieldCheck size={24} />} label="Groups" value={stats.groups} trend="Total" color="purple" />
+                <StatCard icon={<Activity size={24} />} label="Active Now" value={stats.active || 0} trend="Last 10m" color="orange" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
