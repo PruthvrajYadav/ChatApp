@@ -10,26 +10,26 @@ const HomePage = () => {
     const isChatOpen = selectedUser || selectedGroup;
 
     return (
-        <div className='w-full h-screen sm:px-[5%] pt-10 sm:pt-[10%] pb-5 sm:pb-[2%] bg-[var(--bg-color)] relative overflow-hidden transition-all duration-700'>
+        <div className='w-full h-screen md:px-[5%] md:pt-10 md:pb-5 bg-[var(--bg-color)] relative overflow-hidden transition-all duration-700'>
             {/* Animated Background Blobs */}
-            <div className='absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-violet-600/20 blur-[120px] rounded-full animate-pulse'></div>
-            <div className='absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full animate-pulse delay-700'></div>
+            <div className='absolute top-[-10%] left-[-5%] w-[40%] h-[40%] bg-violet-600/20 blur-[120px] rounded-full animate-pulse hidden md:block'></div>
+            <div className='absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-600/20 blur-[120px] rounded-full animate-pulse delay-700 hidden md:block'></div>
             
-            <div className={`h-full glass-panel shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] rounded-[32px] overflow-hidden relative flex transition-all duration-500`}>
+            <div className={`h-full glass-panel md:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] md:rounded-[32px] overflow-hidden relative flex transition-all duration-500`}>
                 {/* Sidebar */}
-                <div className={`${isChatOpen ? 'max-md:hidden w-full md:w-[35%] lg:w-[30%]' : 'w-full'} border-r border-gray-600/30`}>
+                <div className={`${isChatOpen ? 'hidden md:block md:w-[35%] lg:w-[30%]' : 'w-full'} border-r border-gray-600/30 h-full`}>
                     <Sidebar/>
                 </div>
 
                 {/* Chat Area & Profile Section */}
                 {isChatOpen ? (
-                    <div className='flex-1 flex overflow-hidden'>
-                        <div className={`${showProfile ? 'w-full lg:w-[60%] xl:w-[65%]' : 'w-full'} h-full transition-all duration-300`}>
+                    <div className='flex-1 flex overflow-hidden h-full'>
+                        <div className={`${showProfile ? 'hidden lg:block lg:w-[60%] xl:w-[65%]' : 'w-full'} h-full transition-all duration-300`}>
                             <ChatContainer />
                         </div>
                         
                         {(showProfile || viewingUser) && (
-                            <div className='hidden lg:block w-[40%] xl:w-[35%] h-full border-l border-white/5 animate-in slide-in-from-right duration-300'>
+                            <div className={`${showProfile ? 'w-full lg:w-[40%] xl:w-[35%]' : 'hidden'} h-full border-l border-white/5 animate-in slide-in-from-right duration-300`}>
                                 <RightSidebar />
                             </div>
                         )}
