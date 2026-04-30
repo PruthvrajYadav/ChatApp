@@ -15,6 +15,13 @@ app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 6001;
 
+console.log('Checking Environment Variables...');
+if (!process.env.MONGO_URL) {
+    console.error('CRITICAL ERROR: MONGO_URL is NOT defined in Environment Variables!');
+} else {
+    console.log('MONGO_URL found, attempting to connect...');
+}
+
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         console.log('Admin Database Connected');
