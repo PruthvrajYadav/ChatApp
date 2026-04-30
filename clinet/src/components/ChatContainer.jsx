@@ -619,7 +619,12 @@ const ChatContainer = () => {
                     }
                 }}
                 className='flex-1 flex flex-col overflow-y-auto p-4 pb-8 gap-6 relative'
-                style={{ background: authUser.wallpaper, backgroundImage: authUser.wallpaper }}
+                style={{ 
+                    backgroundImage: authUser.wallpaper ? `url(${authUser.wallpaper})` : 'none',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundAttachment: 'fixed'
+                }}
             >
                 {isDragging && (
                     <div className='absolute inset-0 z-50 bg-violet-600/20 backdrop-blur-sm border-2 border-dashed border-violet-500 rounded-xl flex items-center justify-center pointer-events-none'>

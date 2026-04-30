@@ -156,6 +156,7 @@ const Sidebar = () => {
                                     {showMenu && (
                                         <div className='absolute top-full right-0 z-50 w-40 mt-2 p-2 rounded-xl bg-stone-900 border border-white/10 shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95'>
                                             <p onClick={() => { navigate('/profile'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>👤 Edit Profile</p>
+                                            <p onClick={() => { navigate('/settings'); setShowMenu(false) }} className='p-2 hover:bg-white/5 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>⚙️ Settings</p>
                                             <hr className='my-1 border-white/5' />
                                             <p onClick={() => { logout() }} className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg cursor-pointer text-sm transition-colors flex items-center gap-2'>Logout</p>
                                         </div>
