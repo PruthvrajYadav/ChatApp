@@ -380,7 +380,7 @@ const ChatContainer = () => {
                                 <div className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-xs md:text-sm text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>🔇</span> Mute Notifications</div>
                                 <div className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-xs md:text-sm text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>🎨</span> Wallpaper</div>
                                 <div className='h-[1px] bg-white/10 my-1'></div>
-                                <div onClick={() => { if(window.confirm('Clear all messages in this chat?')) clearChat(selectedUser?._id || selectedGroup?._id, !!selectedGroup); setShowChatMenu(false); }} className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-xs md:text-sm text-gray-200 flex items-center gap-3 transition-colors'><span className='text-lg w-5'>Sweep</span> Clear Chat</div>
+                                <div onClick={() => { if(window.confirm('Clear all messages in this chat?')) clearChat(selectedUser?._id || selectedGroup?._id, !!selectedGroup); setShowChatMenu(false); }} className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-xs md:text-sm text-gray-200 flex items-center gap-3 transition-colors'><span className='text-lg w-5'>🧹</span> Clear Chat</div>
                             </div>
                         )}
                     </div>
