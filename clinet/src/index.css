@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import "tailwindcss";
+
+:root {
+	--bg-color: #050505;
+	--sidebar-bg: rgba(15, 15, 15, 0.7);
+	--header-bg: rgba(20, 20, 20, 0.6);
+	--text-color: #f8fafc;
+	--border-color: rgba(255, 255, 255, 0.08);
+	--input-bg: rgba(255, 255, 255, 0.03);
+	--card-bg: #0f172a;
+	--accent-color: #8b5cf6;
+	--accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+}
+
+
+
+@keyframes gradientBG {
+	0% { background-position: 0% 50%; }
+	50% { background-position: 100% 50%; }
+	100% { background-position: 0% 50%; }
+}
+
+* {
+	font-family: "Noto Sans", sans-serif;
+	box-sizing: border-box;
+}
+
+body {
+	background-color: var(--bg-color);
+	background: var(--bg-color);
+	color: var(--text-color);
+	transition: background-color 0.5s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+	min-height: 100vh;
+	margin: 0;
+}
+
+.glass-panel {
+	background: var(--sidebar-bg);
+	backdrop-filter: blur(24px) saturate(180%);
+	-webkit-backdrop-filter: blur(24px) saturate(180%);
+	border: 1px solid var(--border-color);
+}
+
+/* Custom Scrollbar for modern look */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background: var(--border-color);
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: var(--accent-color);
+}
+
+@keyframes spin-slow {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+	animation: spin-slow 12s linear infinite;
+}
