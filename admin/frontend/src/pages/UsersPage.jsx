@@ -30,22 +30,6 @@ const UsersPage = () => {
         fetchUsers();
     }, [token]);
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
-        
-        try {
-            const res = await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL}/users/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.data.success) {
-                toast.success('User deleted');
-                fetchUsers();
-            }
-        } catch (error) {
-            toast.error('Failed to delete user');
-        }
-    };
-
     const filteredUsers = users.filter(user => 
         user.fullName.toLowerCase().includes(searchTerm.toLowerCase()) || 
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -56,7 +40,7 @@ const UsersPage = () => {
             <div className="flex justify-between items-center mb-8">
                 <div>
                     <h1 className="text-3xl font-bold">User Management</h1>
-                    <p className="text-gray-400 mt-1">Manage and monitor all registered users</p>
+                    <p className="text-gray-400 mt-1">Monitor and view all registered users</p>
                 </div>
                 <button 
                     onClick={fetchUsers}
@@ -86,8 +70,7 @@ const UsersPage = () => {
                             <tr>
                                 <th className="px-6 py-4">User</th>
                                 <th className="px-6 py-4">Phone</th>
-                                <th className="px-6 py-4">Joined</th>
-                                <th className="px-6 py-4 text-right">Actions</th>
+                                <th className="px-6 py-4 text-right">Joined</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-700/50">
@@ -109,15 +92,7 @@ const UsersPage = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-400">{user.phoneNumber}</td>
-                                    <td className="px-6 py-4 text-sm text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button 
-                                            onClick={() => handleDelete(user._id)}
-                                            className="p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </td>
+                                    <td className="px-6 py-4 text-right text-sm text-gray-400">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                         </tbody>

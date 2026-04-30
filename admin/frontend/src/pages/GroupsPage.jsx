@@ -29,27 +29,11 @@ const GroupsPage = () => {
         fetchGroups();
     }, [token]);
 
-    const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this group?')) return;
-        
-        try {
-            const res = await axios.delete(`${import.meta.env.VITE_ADMIN_API_URL}/groups/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.data.success) {
-                toast.success('Group deleted');
-                fetchGroups();
-            }
-        } catch (error) {
-            toast.error('Failed to delete group');
-        }
-    };
-
     return (
         <div>
             <div className="mb-8">
                 <h1 className="text-3xl font-bold">Group Management</h1>
-                <p className="text-gray-400 mt-1">Monitor and manage chat groups</p>
+                <p className="text-gray-400 mt-1">Monitor all active chat groups</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -63,12 +47,6 @@ const GroupsPage = () => {
                                     group.name[0].toUpperCase()
                                 )}
                             </div>
-                            <button 
-                                onClick={() => handleDelete(group._id)}
-                                className="p-2 text-gray-400 hover:text-red-500 transition"
-                            >
-                                <Trash2 size={20} />
-                            </button>
                         </div>
 
                         <h3 className="text-xl font-bold mb-2 truncate">{group.name}</h3>
