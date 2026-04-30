@@ -256,7 +256,7 @@ const ChatContainer = () => {
     useEffect(() => {
         const handleClick = (e) => {
             // Only close if the click is outside the context menu and not on a message bubble
-            if (!e.target.closest('.context-menu') && !e.target.closest('.message-bubble')) {
+            if (!e.target.closest('.context-menu') && !e.target.closest('.message-bubble') && !e.target.closest('.menu-button')) {
                 setContextMenu(null)
                 setShowEmoji(false)
                 setShowChatMenu(false)
@@ -506,11 +506,33 @@ const ChatContainer = () => {
                             onClick={() => setShowChatMenu(!showChatMenu)} 
                             src={assets.menu_icon} 
                             alt="" 
-                            className='w-6 opacity-70 hover:opacity-100 cursor-pointer transition-all hover:rotate-90' 
+                            className='menu-button w-6 opacity-70 hover:opacity-100 cursor-pointer transition-all hover:rotate-90' 
                         />
                         
                         {showChatMenu && (
-                            <div className='absolute right-0 top-10 bg-stone-900 border border-white/10 rounded-xl shadow-2xl py-2 min-w-[160px] z-[100] animate-in fade-in zoom-in-95 duration-200'>
+                            <div className='absolute right-0 top-10 bg-[#232323] border border-white/10 rounded-xl shadow-2xl py-2 min-w-[200px] z-[9999] animate-in fade-in zoom-in-95 duration-200 overflow-hidden'>
+                                <div 
+                                    onClick={() => { setShowProfile(true); setShowChatMenu(false); }}
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-gray-200 flex items-center gap-3 transition-colors'
+                                >
+                                    <span className='text-lg w-5'>👤</span> View {selectedUser ? 'Contact' : 'Group Info'}
+                                </div>
+                                <div 
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-gray-200 flex items-center gap-3 transition-colors opacity-50'
+                                >
+                                    <span className='text-lg w-5'>🖼️</span> Media, Links and Docs
+                                </div>
+                                <div 
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-gray-200 flex items-center gap-3 transition-colors opacity-50'
+                                >
+                                    <span className='text-lg w-5'>🔇</span> Mute Notifications
+                                </div>
+                                <div 
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-gray-200 flex items-center gap-3 transition-colors opacity-50'
+                                >
+                                    <span className='text-lg w-5'>🎨</span> Wallpaper
+                                </div>
+                                <div className='h-[1px] bg-white/10 my-1'></div>
                                 <div 
                                     onClick={() => {
                                         if(window.confirm('Clear all messages in this chat?')) {
@@ -518,9 +540,9 @@ const ChatContainer = () => {
                                         }
                                         setShowChatMenu(false);
                                     }}
-                                    className='px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-white flex items-center gap-2'
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-gray-200 flex items-center gap-3 transition-colors'
                                 >
-                                    <span>🧹</span> Clear Chat
+                                    <span className='text-lg w-5'>🧹</span> Clear Chat
                                 </div>
                                 <div 
                                     onClick={() => {
@@ -529,9 +551,9 @@ const ChatContainer = () => {
                                         }
                                         setShowChatMenu(false);
                                     }}
-                                    className='px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-red-400 flex items-center gap-2'
+                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-red-500 flex items-center gap-3 transition-colors'
                                 >
-                                    <span>🗑️</span> Delete Chat
+                                    <span className='text-lg w-5'>🗑️</span> Delete Chat
                                 </div>
                             </div>
                         )}
