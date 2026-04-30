@@ -14,7 +14,9 @@ const userSchema = new mongoose.Schema({
     },
     wallpaper: { type: String, default: "" },
     lastSeen: { type: Date, default: Date.now },
-    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    hiddenChats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    hiddenGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }]
 
 
 }, {

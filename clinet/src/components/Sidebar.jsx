@@ -10,7 +10,7 @@ import { SidebarSkeleton } from './Skeleton'
 
 const Sidebar = () => {
 
-    const {users,getMessages,selectedUser,setSelectedUser,unseenMessage,groups,selectedGroup,setSelectedGroup,getGroupMessages,setUnseenMessage,isLoading, typingUser}=useContext(ChatContext)
+    const {users,getMessages,selectedUser,setSelectedUser,unseenMessage,groups,selectedGroup,setSelectedGroup,getGroupMessages,setUnseenMessage,isLoading, typingUser, deleteChat}=useContext(ChatContext)
     const { logout, onlineUsers, authUser } = useContext(AuthContext)
 
     const [input, setInput] = useState("")
@@ -111,7 +111,7 @@ const Sidebar = () => {
                             <div 
                                 key={index} 
                                 onClick={() => {setSelectedUser(null); setSelectedGroup(group); getGroupMessages(group._id)}}
-                                className={`flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent'}`}
+                                className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent'}`}
                             >
                                 <div className='relative'>
                                     <img 
@@ -133,6 +133,16 @@ const Sidebar = () => {
                                         {unseenMessage[group._id]}
                                     </span>
                                 )}
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if(window.confirm('Delete this group chat?')) deleteChat(group._id, true);
+                                    }}
+                                    className='opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1'
+                                    title="Delete Chat"
+                                >
+                                    ✕
+                                </button>
                             </div>
                         ))}
                     </div>
@@ -155,7 +165,7 @@ const Sidebar = () => {
                             <div 
                                 onClick={() => { setSelectedUser(user); setSelectedGroup(null); getMessages(user._id); setUnseenMessage(prev=>({...prev,[user._id]:0}))}}
                                 key={index} 
-                                className={`relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent'}`}
+                                className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent'}`}
                             >
                                 <div className='relative'>
                                     <img 
@@ -186,6 +196,16 @@ const Sidebar = () => {
                                         {unseenMessage[user._id]}
                                     </span>
                                 )}
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if(window.confirm('Delete this chat?')) deleteChat(user._id);
+                                    }}
+                                    className='opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1'
+                                    title="Delete Chat"
+                                >
+                                    ✕
+                                </button>
                             </div>
                         ))
                     )}

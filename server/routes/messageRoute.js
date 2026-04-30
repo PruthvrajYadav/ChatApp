@@ -12,13 +12,15 @@ import {
     starMessage,
     togglePinMessage,
     scheduleMessage,
-    translateMessage
+    translateMessage,
+    deleteChat
 } from '../controller/messageController.js'
 
 const messageRouter = express.Router()
 
 messageRouter.get("/users", protectRoute, getUsersForSidebar)
 messageRouter.get("/:id", protectRoute, getMessages)
+messageRouter.post("/delete-chat/:id", protectRoute, deleteChat)
 messageRouter.put("/mark/:id", protectRoute, markMessageAsSeen)
 messageRouter.put("/delivered/:id", protectRoute, markMessageAsDelivered)
 messageRouter.post("/send/:id", protectRoute, sendMessage)

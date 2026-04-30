@@ -21,7 +21,7 @@ export const getUsersForSidebar = async (req, res) => {
             ...user.friends.map(id => id.toString()),
             ...messagedUserIds.map(id => id.toString()),
             ...sentUserIds.map(id => id.toString())
-        ])]
+        ])].filter(id => !user.hiddenChats.includes(id)) // Filter out hidden chats
 
         const filterUsers = await User.find({ _id: { $in: allRelevantIds, $ne: userId } }).select("-password")
 
@@ -40,7 +40,10 @@ export const getUsersForSidebar = async (req, res) => {
         })
 
         // Count unread group messages
-        const myGroups = await Group.find({ members: userId });
+        const myGroups = await Group.find({ 
+            members: userId,
+            _id: { $nin: user.hiddenGroups } // Filter out hidden groups
+        });
         const groupPromises = myGroups.map(async (group) => {
             const messages = await Message.find({
                 groupId: group._id,
@@ -210,6 +213,10 @@ export const sendMessage = async (req, res) => {
 
         // Check if receiver is online for delivery status
         const receiverSocketId = userSocketMap[receiverId]
+
+        // Unhide chat for receiver if it was hidden
+        await User.findByIdAndUpdate(receiverId, { $pull: { hiddenChats: senderId } })
+
         // Prevent duplicate socket emit if sending to self (Message Yourself)
         if (receiverSocketId && !isAiPrompt && senderId.toString() !== receiverId.toString()) {
             newMessage.deliveredTo.push(receiverId)
@@ -443,6 +450,24 @@ export const translateMessage = async (req, res) => {
 
         const result = await translate(text, { to: targetLang });
         res.json({ success: true, translatedText: result.text });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export const deleteChat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+        const { isGroup } = req.body;
+
+        if (isGroup) {
+            await User.findByIdAndUpdate(userId, { $addToSet: { hiddenGroups: id } });
+        } else {
+            await User.findByIdAndUpdate(userId, { $addToSet: { hiddenChats: id } });
+        }
+
+        res.json({ success: true, message: "Chat deleted successfully" });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }

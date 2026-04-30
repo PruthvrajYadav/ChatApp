@@ -103,6 +103,12 @@ export const sendGroupMessage = async (req, res) => {
         group.lastMessage = newMessage._id;
         await group.save();
 
+        // Unhide group for all members who had it hidden
+        await User.updateMany(
+            { _id: { $in: group.members } },
+            { $pull: { hiddenGroups: groupId } }
+        );
+
         // Optimized: Emit to group room
         if (!isAiPrompt) {
             io.to(groupId).emit("newGroupMessage", { groupId, message: newMessage });
