@@ -186,6 +186,38 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const pinChat = async (id, isGroup = false) => {
+        try {
+            const { data } = await axios.post(`/api/messages/pin-chat/${id}`, { isGroup })
+            if (data.success) {
+                toast.success(data.message)
+                if (isGroup) {
+                    setGroups(prev => prev.map(g => g._id === id ? { ...g, isPinned: data.isPinned } : g))
+                } else {
+                    setUsers(prev => prev.map(u => u._id === id ? { ...u, isPinned: data.isPinned } : u))
+                }
+            }
+        } catch (error) {
+            toast.error("Failed to pin chat")
+        }
+    }
+
+    const muteChat = async (id, isGroup = false) => {
+        try {
+            const { data } = await axios.post(`/api/messages/mute-chat/${id}`, { isGroup })
+            if (data.success) {
+                toast.success(data.message)
+                if (isGroup) {
+                    setGroups(prev => prev.map(g => g._id === id ? { ...g, isMuted: data.isMuted } : g))
+                } else {
+                    setUsers(prev => prev.map(u => u._id === id ? { ...u, isMuted: data.isMuted } : u))
+                }
+            }
+        } catch (error) {
+            toast.error("Failed to mute chat")
+        }
+    }
+
     // Group Functions
     const getGroups = async () => {
         try {
@@ -560,7 +592,7 @@ export const ChatProvider = ({ children }) => {
         selectedGroup, setSelectedGroup,
         unseenMessage, setUnseenMessage,
         getUsers, getMessages, sendMessage, subscribeToMessage,
-        editMessage, deleteMessage, deleteChat, clearChat,
+        editMessage, deleteMessage, deleteChat, clearChat, pinChat, muteChat,
         getGroups, createGroup, getGroupMessages, sendGroupMessage, updateGroup, addMembers,
         removeMember, promoteToAdmin,
         showProfile, setShowProfile,

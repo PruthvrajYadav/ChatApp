@@ -53,10 +53,18 @@ export const createGroup = async (req, res) => {
 export const getMyGroups = async (req, res) => {
     try {
         const userId = req.user._id;
+        const user = await User.findById(userId);
         const groups = await Group.find({ members: userId })
             .populate("members", "-password")
             .populate("admins", "-password");
-        res.json({ success: true, groups });
+            
+        const groupsWithFlags = groups.map(g => {
+            const groupObj = g.toObject();
+            groupObj.isPinned = user.pinnedGroups?.includes(g._id) || false;
+            groupObj.isMuted = user.mutedGroups?.includes(g._id) || false;
+            return groupObj;
+        });
+        res.json({ success: true, groups: groupsWithFlags });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }

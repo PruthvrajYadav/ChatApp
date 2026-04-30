@@ -14,7 +14,9 @@ import {
     scheduleMessage,
     translateMessage,
     deleteChat,
-    clearChat
+    clearChat,
+    togglePinChat,
+    toggleMuteChat
 } from '../controller/messageController.js'
 
 const messageRouter = express.Router()
@@ -23,6 +25,8 @@ messageRouter.get("/users", protectRoute, getUsersForSidebar)
 messageRouter.get("/:id", protectRoute, getMessages)
 messageRouter.post("/delete-chat/:id", protectRoute, deleteChat)
 messageRouter.post("/clear-chat/:id", protectRoute, clearChat)
+messageRouter.post("/pin-chat/:id", protectRoute, togglePinChat)
+messageRouter.post("/mute-chat/:id", protectRoute, toggleMuteChat)
 messageRouter.put("/mark/:id", protectRoute, markMessageAsSeen)
 messageRouter.put("/delivered/:id", protectRoute, markMessageAsDelivered)
 messageRouter.post("/send/:id", protectRoute, sendMessage)

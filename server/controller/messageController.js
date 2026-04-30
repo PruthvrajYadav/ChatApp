@@ -55,7 +55,16 @@ export const getUsersForSidebar = async (req, res) => {
         });
 
         await Promise.all([...promises, ...groupPromises])
-        res.json({ success: true, users: filterUsers, unseenMessage })
+
+        // Add isPinned and isMuted flags to users
+        const usersWithFlags = filterUsers.map(u => {
+            const userObj = u.toObject();
+            userObj.isPinned = user.pinnedChats.includes(u._id);
+            userObj.isMuted = user.mutedChats.includes(u._id);
+            return userObj;
+        });
+
+        res.json({ success: true, users: usersWithFlags, unseenMessage })
     } catch (error) {
         console.log(error.message);
         res.json({ success: false, message: error.message })
@@ -486,6 +495,50 @@ export const clearChat = async (req, res) => {
         }
 
         res.json({ success: true, message: "Chat cleared successfully" });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export const togglePinChat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+        const { isGroup } = req.body;
+
+        const field = isGroup ? 'pinnedGroups' : 'pinnedChats';
+        const user = await User.findById(userId);
+        
+        const isPinned = user[field].includes(id);
+        if (isPinned) {
+            await User.findByIdAndUpdate(userId, { $pull: { [field]: id } });
+        } else {
+            await User.findByIdAndUpdate(userId, { $addToSet: { [field]: id } });
+        }
+
+        res.json({ success: true, message: isPinned ? "Unpinned" : "Pinned", isPinned: !isPinned });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
+
+export const toggleMuteChat = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user._id;
+        const { isGroup } = req.body;
+
+        const field = isGroup ? 'mutedGroups' : 'mutedChats';
+        const user = await User.findById(userId);
+        
+        const isMuted = user[field].includes(id);
+        if (isMuted) {
+            await User.findByIdAndUpdate(userId, { $pull: { [field]: id } });
+        } else {
+            await User.findByIdAndUpdate(userId, { $addToSet: { [field]: id } });
+        }
+
+        res.json({ success: true, message: isMuted ? "Unmuted" : "Muted", isMuted: !isMuted });
     } catch (error) {
         res.json({ success: false, message: error.message });
     }

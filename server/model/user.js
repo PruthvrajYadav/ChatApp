@@ -16,7 +16,11 @@ const userSchema = new mongoose.Schema({
     lastSeen: { type: Date, default: Date.now },
     friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     hiddenChats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    hiddenGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }]
+    hiddenGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }],
+    pinnedChats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    pinnedGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }],
+    mutedChats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    mutedGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Group' }]
 
 
 }, {

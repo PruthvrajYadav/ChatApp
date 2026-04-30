@@ -10,7 +10,7 @@ import { SidebarSkeleton } from './Skeleton'
 
 const Sidebar = () => {
 
-    const {users,getMessages,selectedUser,setSelectedUser,unseenMessage,groups,selectedGroup,setSelectedGroup,getGroupMessages,setUnseenMessage,isLoading, typingUser, deleteChat, clearChat}=useContext(ChatContext)
+    const {users,getMessages,selectedUser,setSelectedUser,unseenMessage,groups,selectedGroup,setSelectedGroup,getGroupMessages,setUnseenMessage,isLoading, typingUser, deleteChat, clearChat, pinChat, muteChat}=useContext(ChatContext)
     const { logout, onlineUsers, authUser } = useContext(AuthContext)
 
     const [input, setInput] = useState("")
@@ -46,10 +46,24 @@ const Sidebar = () => {
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false)
     const [selectedImage, setSelectedImage] = useState(null)
 
-    const filterUSers = users.filter((user) => {
+    // Sort users: Pinned first
+    const sortedUsers = [...users].sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return 0;
+    });
+
+    const filterUSers = sortedUsers.filter((user) => {
         const matchesSearch = user.fullName.toLowerCase().includes(input.toLowerCase());
         const matchesTab = activeTab === 'Unread' ? unseenMessage[user._id] > 0 : true;
         return matchesSearch && matchesTab;
+    });
+
+    // Sort groups: Pinned first
+    const sortedGroups = [...groups].sort((a, b) => {
+        if (a.isPinned && !b.isPinned) return -1;
+        if (!a.isPinned && b.isPinned) return 1;
+        return 0;
     });
 
     const navigate = useNavigate()
@@ -75,8 +89,31 @@ const Sidebar = () => {
                                     cancelSelection();
                                 }
                             }} title="Delete" className='text-xl hover:scale-125 transition-transform'>🗑️</button>
-                            <button title="Pin" className='text-xl hover:scale-125 transition-transform'>📌</button>
-                            <button title="Mute" className='text-xl hover:scale-125 transition-transform'>🔇</button>
+                            
+                            <button 
+                                onClick={() => {
+                                    selectedChatIds.forEach(id => {
+                                        const isGrp = groups.some(g => String(g._id) === String(id));
+                                        pinChat(id, isGrp);
+                                    });
+                                    cancelSelection();
+                                }} 
+                                title="Pin/Unpin" 
+                                className='text-xl hover:scale-125 transition-transform'
+                            >📌</button>
+                            
+                            <button 
+                                onClick={() => {
+                                    selectedChatIds.forEach(id => {
+                                        const isGrp = groups.some(g => String(g._id) === String(id));
+                                        muteChat(id, isGrp);
+                                    });
+                                    cancelSelection();
+                                }} 
+                                title="Mute/Unmute" 
+                                className='text-xl hover:scale-125 transition-transform'
+                            >🔇</button>
+                            
                             <button onClick={cancelSelection} title="Close" className='text-xl hover:scale-125 transition-transform ml-2'>✕</button>
                         </div>
                     </div>
@@ -158,8 +195,8 @@ const Sidebar = () => {
                 <CreateGroupModal isOpen={isGroupModalOpen} onClose={() => setIsGroupModalOpen(false)} />
                 
                 <div className='flex flex-col gap-2'>
-                    {groups.length === 0 && <p className='text-[10px] text-gray-500 italic px-2'>No groups joined</p>}
-                    {groups.map((group, index) => (
+                    {sortedGroups.length === 0 && <p className='text-[10px] text-gray-500 italic px-2'>No groups joined</p>}
+                    {sortedGroups.map((group, index) => (
                         <div 
                             key={index} 
                             onClick={() => {
@@ -188,7 +225,11 @@ const Sidebar = () => {
                                 />
                             </div>
                             <div className='flex-1 min-w-0'>
-                                <p className='text-sm font-bold text-white truncate'>{group.name}</p>
+                                <div className='flex items-center gap-1.5'>
+                                    <p className='text-sm font-bold text-white truncate'>{group.name}</p>
+                                    {group.isPinned && <span className='text-[10px]' title="Pinned">📌</span>}
+                                    {group.isMuted && <span className='text-[10px]' title="Muted">🔇</span>}
+                                </div>
                                 <p className='text-[10px] text-gray-500 truncate'>{group.members.length} members</p>
                             </div>
                             {unseenMessage[group._id] > 0 && (
@@ -246,11 +287,15 @@ const Sidebar = () => {
                                 )}
                             </div>
                             <div className='flex-1 min-w-0'>
-                                <p className='text-sm font-bold text-white truncate'>
-                                    {String(user._id) === String(authUser._id) ? "You" : (
-                                        authUser.friends?.some(f => String(f._id || f) === String(user._id)) ? user.fullName : (user.phoneNumber || user.fullName)
-                                    )}
-                                </p>
+                                <div className='flex items-center gap-1.5'>
+                                    <p className='text-sm font-bold text-white truncate'>
+                                        {String(user._id) === String(authUser._id) ? "You" : (
+                                            authUser.friends?.some(f => String(f._id || f) === String(user._id)) ? user.fullName : (user.phoneNumber || user.fullName)
+                                        )}
+                                    </p>
+                                    {user.isPinned && <span className='text-[10px]' title="Pinned">📌</span>}
+                                    {user.isMuted && <span className='text-[10px]' title="Muted">🔇</span>}
+                                </div>
                                 <p className={`text-[10px] truncate ${typingUser === user._id ? 'text-green-400 font-bold animate-pulse' : (onlineUsers.includes(user._id) ? 'text-green-400 font-medium' : 'text-gray-500')}`}>
                                     {typingUser === user._id ? 'typing...' : (user.status || (onlineUsers.includes(user._id) ? 'Online' : 'Offline'))}
                                 </p>
