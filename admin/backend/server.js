@@ -11,10 +11,12 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-    res.send('Admin API is Running Successfully!');
-});
 app.use('/api/admin', adminRoutes);
+
+// Catch-all route to handle SPA routing (fix 404 on refresh)
+app.get('*', (req, res) => {
+    res.send('Admin API is Running. Please access the frontend via its dedicated port (usually 5174 in dev).');
+});
 
 const PORT = process.env.PORT || 6001;
 
