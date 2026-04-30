@@ -138,10 +138,10 @@ const Sidebar = () => {
                                         e.stopPropagation();
                                         if(window.confirm('Delete this group chat?')) deleteChat(group._id, true);
                                     }}
-                                    className='opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1'
+                                    className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1 text-sm'
                                     title="Delete Chat"
                                 >
-                                    ✕
+                                    🗑️
                                 </button>
                             </div>
                         ))}
@@ -201,10 +201,10 @@ const Sidebar = () => {
                                         e.stopPropagation();
                                         if(window.confirm('Delete this chat?')) deleteChat(user._id);
                                     }}
-                                    className='opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1'
+                                    className='p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-all ml-1 text-sm'
                                     title="Delete Chat"
                                 >
-                                    ✕
+                                    🗑️
                                 </button>
                             </div>
                         ))
