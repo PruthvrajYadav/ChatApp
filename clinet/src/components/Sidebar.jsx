@@ -167,6 +167,10 @@ const Sidebar = () => {
                             onMouseUp={endPress}
                             onTouchStart={() => startPress(group._id, true)}
                             onTouchEnd={endPress}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                handleLongPress(group._id, true);
+                            }}
                             className={`group flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedChatIds.includes(group._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedGroup?._id === group._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-white/5 border border-transparent')}`}
                         >
                             <div className='relative'>
@@ -217,6 +221,10 @@ const Sidebar = () => {
                             onMouseUp={endPress}
                             onTouchStart={() => startPress(user._id, false)}
                             onTouchEnd={endPress}
+                            onContextMenu={(e) => {
+                                e.preventDefault();
+                                handleLongPress(user._id, false);
+                            }}
                             key={index} 
                             className={`group relative flex items-center gap-3 p-3 rounded-2xl cursor-pointer transition-all ${selectedChatIds.includes(user._id) ? 'bg-green-500/20 border border-green-500/30' : (selectedUser?._id === user._id ? 'bg-violet-600/20 border border-violet-500/30' : 'hover:bg-[var(--input-bg)] border border-transparent')}`}
                         >
