@@ -18,7 +18,7 @@ const PORT = process.env.PORT || 6001;
 mongoose.connect(process.env.MONGO_URL)
     .then(() => {
         console.log('Admin Database Connected');
-        app.listen(PORT, () => {
+        app.listen(PORT, '0.0.0.0', () => {
             console.log(`Admin server running on port ${PORT}`);
         });
     })
