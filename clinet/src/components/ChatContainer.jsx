@@ -544,17 +544,6 @@ const ChatContainer = () => {
                                 >
                                     <span className='text-lg w-5'>🧹</span> Clear Chat
                                 </div>
-                                <div 
-                                    onClick={() => {
-                                        if(window.confirm('Delete this chat?')) {
-                                            deleteChat(selectedUser?._id || selectedGroup?._id, !!selectedGroup);
-                                        }
-                                        setShowChatMenu(false);
-                                    }}
-                                    className='px-4 py-2.5 hover:bg-white/5 cursor-pointer text-sm text-red-500 flex items-center gap-3 transition-colors'
-                                >
-                                    <span className='text-lg w-5'>🗑️</span> Delete Chat
-                                </div>
                             </div>
                         )}
                     </div>
