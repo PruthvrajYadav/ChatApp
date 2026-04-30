@@ -247,8 +247,6 @@ const Sidebar = () => {
                     style={{ top: sidebarContextMenu.y, left: sidebarContextMenu.x }}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    <div className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>📥</span> Archive chat</div>
-                    
                     <div onClick={() => {muteChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors'>
                         <span className='text-lg w-5'>🔇</span> Mute notifications
                     </div>
@@ -262,10 +260,6 @@ const Sidebar = () => {
                     <div className='h-[1px] bg-white/10 my-1'></div>
                     
                     <div className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>🚫</span> Block</div>
-                    
-                    <div onClick={() => { if(window.confirm('Clear chat?')) clearChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors'>
-                        <span className='text-lg w-5'>🧹</span> Clear chat
-                    </div>
                     
                     <div onClick={() => { if(window.confirm('Delete chat?')) deleteChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-red-400 flex items-center gap-3 transition-colors'>
                         <span className='text-lg w-5'>🗑️</span> Delete chat
