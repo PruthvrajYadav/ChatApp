@@ -11,6 +11,9 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.get('/', (req, res) => {
+    res.send('Admin API is Running Successfully!');
+});
 app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 6001;
