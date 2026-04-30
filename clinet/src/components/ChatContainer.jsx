@@ -16,7 +16,7 @@ const ChatContainer = () => {
         selectedGroup, setSelectedGroup, sendGroupMessage, getGroupMessages,
         reactToMessage, starMessage, forwardMessage, pinMessage, isLoading,
         hasMore, isLoadingMore, getMoreMessages, viewingUser, setViewingUser,
-        scheduleMessage, translateText
+        scheduleMessage, translateText, clearChat, deleteChat
     } = useContext(ChatContext)
     const { authUser, onlineUsers, socket } = useContext(AuthContext)
 
@@ -49,6 +49,7 @@ const ChatContainer = () => {
     const typingTimeoutRef = useRef(null)
     const speechRecognitionRef = useRef(null)
     const recordingIntervalRef = useRef(null)
+    const [showChatMenu, setShowChatMenu] = useState(false)
 
     const senderColors = [
         'text-blue-400', 'text-green-400', 'text-yellow-400', 
@@ -258,6 +259,7 @@ const ChatContainer = () => {
             if (!e.target.closest('.context-menu') && !e.target.closest('.message-bubble')) {
                 setContextMenu(null)
                 setShowEmoji(false)
+                setShowChatMenu(false)
             }
         }
         window.addEventListener('click', handleClick)
@@ -498,6 +500,42 @@ const ChatContainer = () => {
                         </div>
                     )}
                     <img onClick={() => setShowSearch(!showSearch)} src={assets.search_icon} alt="" className={`w-6 opacity-70 hover:opacity-100 cursor-pointer transition-all hover:scale-110 ${showSearch ? 'brightness-125 opacity-100' : ''}`} />
+                    
+                    <div className='relative'>
+                        <img 
+                            onClick={() => setShowChatMenu(!showChatMenu)} 
+                            src={assets.menu_icon} 
+                            alt="" 
+                            className='w-6 opacity-70 hover:opacity-100 cursor-pointer transition-all hover:rotate-90' 
+                        />
+                        
+                        {showChatMenu && (
+                            <div className='absolute right-0 top-10 bg-stone-900 border border-white/10 rounded-xl shadow-2xl py-2 min-w-[160px] z-[100] animate-in fade-in zoom-in-95 duration-200'>
+                                <div 
+                                    onClick={() => {
+                                        if(window.confirm('Clear all messages in this chat?')) {
+                                            clearChat(selectedUser?._id || selectedGroup?._id, !!selectedGroup);
+                                        }
+                                        setShowChatMenu(false);
+                                    }}
+                                    className='px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-white flex items-center gap-2'
+                                >
+                                    <span>🧹</span> Clear Chat
+                                </div>
+                                <div 
+                                    onClick={() => {
+                                        if(window.confirm('Delete this chat?')) {
+                                            deleteChat(selectedUser?._id || selectedGroup?._id, !!selectedGroup);
+                                        }
+                                        setShowChatMenu(false);
+                                    }}
+                                    className='px-4 py-2 hover:bg-white/5 cursor-pointer text-sm text-red-400 flex items-center gap-2'
+                                >
+                                    <span>🗑️</span> Delete Chat
+                                </div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
 

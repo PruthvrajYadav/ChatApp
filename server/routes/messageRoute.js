@@ -13,7 +13,8 @@ import {
     togglePinMessage,
     scheduleMessage,
     translateMessage,
-    deleteChat
+    deleteChat,
+    clearChat
 } from '../controller/messageController.js'
 
 const messageRouter = express.Router()
@@ -21,6 +22,7 @@ const messageRouter = express.Router()
 messageRouter.get("/users", protectRoute, getUsersForSidebar)
 messageRouter.get("/:id", protectRoute, getMessages)
 messageRouter.post("/delete-chat/:id", protectRoute, deleteChat)
+messageRouter.post("/clear-chat/:id", protectRoute, clearChat)
 messageRouter.put("/mark/:id", protectRoute, markMessageAsSeen)
 messageRouter.put("/delivered/:id", protectRoute, markMessageAsDelivered)
 messageRouter.post("/send/:id", protectRoute, sendMessage)

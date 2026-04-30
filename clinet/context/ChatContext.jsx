@@ -167,6 +167,25 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const clearChat = async (id, isGroup = false) => {
+        try {
+            const { data } = await axios.post(`/api/messages/clear-chat/${id}`, { isGroup })
+            if (data.success) {
+                toast.success("Chat cleared")
+                setMessage([]) // Clear local messages
+                if (isGroup) {
+                    setGroups(prev => prev.filter(g => g._id !== id))
+                    if (selectedGroup?._id === id) setSelectedGroup(null)
+                } else {
+                    setUsers(prev => prev.filter(u => u._id !== id))
+                    if (selectedUser?._id === id) setSelectedUser(null)
+                }
+            }
+        } catch (error) {
+            toast.error("Failed to clear chat")
+        }
+    }
+
     // Group Functions
     const getGroups = async () => {
         try {
@@ -541,7 +560,7 @@ export const ChatProvider = ({ children }) => {
         selectedGroup, setSelectedGroup,
         unseenMessage, setUnseenMessage,
         getUsers, getMessages, sendMessage, subscribeToMessage,
-        editMessage, deleteMessage, deleteChat,
+        editMessage, deleteMessage, deleteChat, clearChat,
         getGroups, createGroup, getGroupMessages, sendGroupMessage, updateGroup, addMembers,
         removeMember, promoteToAdmin,
         showProfile, setShowProfile,

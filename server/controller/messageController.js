@@ -472,3 +472,21 @@ export const deleteChat = async (req, res) => {
         res.json({ success: false, message: error.message });
     }
 };
+
+export const clearChat = async (req, res) => {
+    try {
+        const { id: targetId } = req.params;
+        const myId = req.user._id;
+        const { isGroup } = req.body;
+
+        if (isGroup) {
+            await User.findByIdAndUpdate(myId, { $addToSet: { hiddenGroups: targetId } });
+        } else {
+            await User.findByIdAndUpdate(myId, { $addToSet: { hiddenChats: targetId } });
+        }
+
+        res.json({ success: true, message: "Chat cleared successfully" });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+};
