@@ -19,9 +19,9 @@ export const getUsersForSidebar = async (req, res) => {
         
         const allRelevantIds = [...new Set([
             userId.toString(),
-            ...user.friends.map(id => id.toString()),
-            ...messagedUserIds.map(id => id.toString()),
-            ...sentUserIds.map(id => id.toString())
+            ...(user.friends || []).map(id => id.toString()),
+            ...(messagedUserIds || []).map(id => id.toString()),
+            ...(sentUserIds || []).map(id => id.toString())
         ])].filter(id => !user.hiddenChats.includes(id)) // Filter out hidden chats
 
         const filterUsers = await User.find({ _id: { $in: allRelevantIds } }).select("-password")

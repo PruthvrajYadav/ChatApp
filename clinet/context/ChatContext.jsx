@@ -54,8 +54,7 @@ export const ChatProvider = ({ children }) => {
             if (data.success) {
                 console.log("Users fetched successfully:", data.users);
                 // Prepend authUser to the list for "Message Yourself" feature
-                const usersList = authUser ? [{ ...authUser, fullName: `${authUser.fullName} (You)` }, ...data.users] : data.users;
-                setUsers(usersList)
+                setUsers(data.users)
                 setUnseenMessage(data.unseenMessage)
             } else {
                 toast.error(data.message)
