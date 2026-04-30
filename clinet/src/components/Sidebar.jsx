@@ -54,7 +54,10 @@ const Sidebar = () => {
 
     const navigate = useNavigate()
     return (
-        <div className={`bg-transparent h-full p-5 pt-8 border-r border-[var(--border-color)] overflow-y-auto text-[var(--text-color)] ${selectedUser || selectedGroup ? "max-md:hidden" : ''} `}>
+        <div 
+            onContextMenu={(e) => e.preventDefault()}
+            className={`bg-transparent h-full p-5 pt-8 border-r border-[var(--border-color)] overflow-y-auto text-[var(--text-color)] ${selectedUser || selectedGroup ? "max-md:hidden" : ''} `}
+        >
             <div className='pb-5'>
                 {selectedChatIds.length > 0 ? (
                     <div className='flex items-center justify-between p-3 bg-violet-600/20 border border-violet-500/30 rounded-2xl animate-in slide-in-from-top duration-300 mb-6'>
