@@ -320,7 +320,7 @@ const ChatContainer = () => {
                             alt="" 
                             className='w-10 h-10 md:w-12 md:h-12 aspect-square object-cover rounded-full border-2 border-violet-500/50 cursor-pointer hover:border-violet-400 transition-all active:scale-95' 
                         />
-                        {selectedUser && onlineUsers.includes(selectedUser._id) && (
+                        {selectedUser && onlineUsers?.includes(selectedUser._id) && (
                             <span className='absolute bottom-0 right-0 w-3 h-3 md:w-3.5 md:h-3.5 bg-green-500 border-2 border-[#1a1a1a] rounded-full'></span>
                         )}
                     </div>
@@ -332,7 +332,7 @@ const ChatContainer = () => {
                         </h1>
                         <div className='flex items-center gap-1.5 mt-0.5'>
                             {selectedUser ? (
-                                onlineUsers.includes(selectedUser._id) ? (
+                                onlineUsers?.includes(selectedUser._id) ? (
                                     <div className='flex items-center gap-1'>
                                         {typingUser === selectedUser._id ? (
                                             <span className='text-[10px] md:text-xs text-violet-400 font-medium animate-pulse'>typing...</span>
