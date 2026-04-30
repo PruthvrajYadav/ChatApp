@@ -5,6 +5,7 @@ import AdminLoginPage from './pages/AdminLoginPage';
 import Dashboard from './pages/Dashboard';
 import UsersPage from './pages/UsersPage';
 import GroupsPage from './pages/GroupsPage';
+import SettingsPage from './pages/SettingsPage';
 import AdminLayout from './components/AdminLayout';
 import { Toaster } from 'react-hot-toast';
 
@@ -41,6 +42,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <GroupsPage />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/settings" 
+                        element={
+                            <ProtectedRoute>
+                                <SettingsPage />
                             </ProtectedRoute>
                         } 
                     />
