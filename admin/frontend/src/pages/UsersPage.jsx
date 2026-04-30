@@ -1,7 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AdminAuthContext } from '../context/AdminAuthContext';
-import { User, Search, RefreshCw, ShieldCheck, ShieldAlert, Shield, Eye, X, MessageSquare, Users, Calendar, Phone, Mail } from 'lucide-react';
+import { User, Search, RefreshCw, ShieldCheck, ShieldAlert, Shield, Eye, X, MessageSquare, Users, Calendar, Phone, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const UsersPage = () => {
@@ -9,6 +9,9 @@ const UsersPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [loading, setLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const usersPerPage = 10;
+    
     const { token } = useContext(AdminAuthContext);
 
     const fetchUsers = async () => {
@@ -51,6 +54,17 @@ const UsersPage = () => {
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // Pagination Logic
+    const indexOfLastUser = currentPage * usersPerPage;
+    const indexOfFirstUser = indexOfLastUser - usersPerPage;
+    const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+
+    // Reset to page 1 when search changes
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
     return (
         <div className="pb-10 relative">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
@@ -67,8 +81,8 @@ const UsersPage = () => {
             </div>
 
             <div className="bg-gray-800 rounded-3xl border border-gray-700 shadow-2xl overflow-hidden">
-                <div className="p-4 md:p-6 border-b border-gray-700">
-                    <div className="relative">
+                <div className="p-4 md:p-6 border-b border-gray-700 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="relative w-full md:max-w-md">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input 
                             type="text" 
@@ -77,6 +91,9 @@ const UsersPage = () => {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
+                    </div>
+                    <div className="text-xs text-gray-500 font-medium">
+                        Showing {indexOfFirstUser + 1}-{Math.min(indexOfLastUser, filteredUsers.length)} of {filteredUsers.length} users
                     </div>
                 </div>
 
@@ -91,13 +108,13 @@ const UsersPage = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-700/50">
-                            {filteredUsers.length === 0 ? (
+                            {currentUsers.length === 0 ? (
                                 <tr>
                                     <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
                                         No users found matching your search
                                     </td>
                                 </tr>
-                            ) : filteredUsers.map((user) => {
+                            ) : currentUsers.map((user) => {
                                 const trustScore = calculateTrustScore(user);
                                 const trust = getTrustLevel(trustScore);
                                 return (
@@ -153,6 +170,37 @@ const UsersPage = () => {
                         </tbody>
                     </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                    <div className="p-4 md:p-6 border-t border-gray-700 flex justify-center items-center gap-4">
+                        <button 
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => prev - 1)}
+                            className="p-2 bg-gray-900 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition border border-gray-700 text-gray-400"
+                        >
+                            <ChevronLeft size={20} />
+                        </button>
+                        <div className="flex items-center gap-2">
+                            {[...Array(totalPages)].map((_, i) => (
+                                <button
+                                    key={i + 1}
+                                    onClick={() => setCurrentPage(i + 1)}
+                                    className={`w-10 h-10 rounded-xl text-sm font-bold transition-all border ${currentPage === i + 1 ? 'bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-600/20' : 'bg-gray-900 border-gray-700 text-gray-500 hover:bg-gray-700 hover:text-gray-300'}`}
+                                >
+                                    {i + 1}
+                                </button>
+                            ))}
+                        </div>
+                        <button 
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            className="p-2 bg-gray-900 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-xl transition border border-gray-700 text-gray-400"
+                        >
+                            <ChevronRight size={20} />
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* User Profile Modal */}
