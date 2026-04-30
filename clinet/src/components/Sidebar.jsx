@@ -255,12 +255,6 @@ const Sidebar = () => {
                         <span className='text-lg w-5'>📌</span> Pin chat
                     </div>
                     
-                    <div className='px-4 py-2 hover:bg-white/5 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>📩</span> Mark as unread</div>
-                    
-                    <div className='h-[1px] bg-white/10 my-1'></div>
-                    
-                    <div className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-gray-200 flex items-center gap-3 transition-colors opacity-50'><span className='text-lg w-5'>🚫</span> Block</div>
-                    
                     <div onClick={() => { if(window.confirm('Delete chat?')) deleteChat(sidebarContextMenu.id, sidebarContextMenu.isGroup); setSidebarContextMenu(null)}} className='px-4 py-2 hover:bg-red-500/10 cursor-pointer text-xs text-red-400 flex items-center gap-3 transition-colors'>
                         <span className='text-lg w-5'>🗑️</span> Delete chat
                     </div>
