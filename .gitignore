@@ -2,11 +2,15 @@
 node_modules/
 clinet/node_modules/
 server/node_modules/
+admin/backend/node_modules/
+admin/frontend/node_modules/
 
 # Environment variables
 .env
 clinet/.env
 server/.env
+admin/backend/.env
+admin/frontend/.env
 
 # Build outputs
 dist/
