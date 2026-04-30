@@ -311,9 +311,8 @@ const Sidebar = () => {
                             <div className='flex-1 min-w-0'>
                                 <div className='flex items-center gap-1.5'>
                                     <p className='text-sm font-bold text-white truncate'>
-                                        {String(user._id) === String(authUser._id) ? "You" : (
-                                            authUser.friends?.some(f => String(f._id || f) === String(user._id)) ? user.fullName : (user.phoneNumber || user.fullName)
-                                        )}
+                                        {authUser.friends?.some(f => String(f._id || f) === String(user._id)) ? user.fullName : (user.phoneNumber || user.fullName)}
+                                        {String(user._id) === String(authUser._id) && <span className='text-[10px] text-violet-400 ml-1'>(You)</span>}
                                     </p>
                                     {user.isPinned && <span className='text-[10px]' title="Pinned">📌</span>}
                                     {user.isMuted && <span className='text-[10px]' title="Muted">🔇</span>}
