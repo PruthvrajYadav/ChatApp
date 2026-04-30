@@ -3,11 +3,14 @@ import { useContext } from 'react';
 import { AdminAuthContext, AdminAuthProvider } from './context/AdminAuthContext';
 import AdminLoginPage from './pages/AdminLoginPage';
 import Dashboard from './pages/Dashboard';
+import UsersPage from './pages/UsersPage';
+import GroupsPage from './pages/GroupsPage';
+import AdminLayout from './components/AdminLayout';
 import { Toaster } from 'react-hot-toast';
 
 const ProtectedRoute = ({ children }) => {
     const { isAdmin } = useContext(AdminAuthContext);
-    return isAdmin ? children : <Navigate to="/login" />;
+    return isAdmin ? <AdminLayout>{children}</AdminLayout> : <Navigate to="/login" />;
 };
 
 function App() {
@@ -25,6 +28,23 @@ function App() {
                             </ProtectedRoute>
                         } 
                     />
+                    <Route 
+                        path="/users" 
+                        element={
+                            <ProtectedRoute>
+                                <UsersPage />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route 
+                        path="/groups" 
+                        element={
+                            <ProtectedRoute>
+                                <GroupsPage />
+                            </ProtectedRoute>
+                        } 
+                    />
+                    <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
             </Router>
         </AdminAuthProvider>

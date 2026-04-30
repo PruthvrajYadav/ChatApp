@@ -1,12 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AdminAuthContext } from '../context/AdminAuthContext';
-import { Users, MessageSquare, Users as GroupIcon, LogOut } from 'lucide-react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Users, MessageSquare, ShieldCheck, Activity } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({ users: 0, messages: 0, groups: 0 });
-    const { token, logout } = useContext(AdminAuthContext);
+    const { token } = useContext(AdminAuthContext);
 
     useEffect(() => {
         const fetchStats = async () => {
@@ -31,52 +31,88 @@ const Dashboard = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-900 text-white p-8">
-            <header className="flex justify-between items-center mb-10">
-                <h1 className="text-4xl font-extrabold tracking-tight">Admin Dashboard</h1>
-                <button 
-                    onClick={logout}
-                    className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition"
-                >
-                    <LogOut size={18} /> Logout
-                </button>
+        <div className="space-y-10">
+            <header>
+                <h1 className="text-4xl font-extrabold tracking-tight">System Overview</h1>
+                <p className="text-gray-400 mt-2">Real-time monitoring and system metrics</p>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                <StatCard icon={<Users size={32} />} label="Total Users" value={stats.users} color="bg-blue-600" />
-                <StatCard icon={<MessageSquare size={32} />} label="Total Messages" value={stats.messages} color="bg-green-600" />
-                <StatCard icon={<GroupIcon size={32} />} label="Total Groups" value={stats.groups} color="bg-purple-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <StatCard icon={<Users size={24} />} label="Total Users" value={stats.users} trend="+12%" color="blue" />
+                <StatCard icon={<MessageSquare size={24} />} label="Messages" value={stats.messages} trend="+5%" color="green" />
+                <StatCard icon={<ShieldCheck size={24} />} label="Groups" value={stats.groups} trend="+2%" color="purple" />
+                <StatCard icon={<Activity size={24} />} label="Active Now" value="42" trend="Live" color="orange" />
             </div>
 
-            <div className="bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-xl">
-                <h2 className="text-2xl font-bold mb-6">Activity Overview</h2>
-                <div className="h-[300px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={chartData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="name" stroke="#9CA3AF" />
-                            <YAxis stroke="#9CA3AF" />
-                            <Tooltip 
-                                contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '8px' }}
-                                itemStyle={{ color: '#fff' }}
-                            />
-                            <Bar dataKey="count" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                        </BarChart>
-                    </ResponsiveContainer>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="bg-gray-800 p-8 rounded-3xl border border-gray-700 shadow-xl">
+                    <h2 className="text-xl font-bold mb-8">Platform Growth</h2>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={chartData}>
+                                <defs>
+                                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3}/>
+                                        <stop offset="95%" stopColor="#3B82F6" stopOpacity={0}/>
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                                <XAxis dataKey="name" stroke="#9CA3AF" axisLine={false} tickLine={false} />
+                                <YAxis stroke="#9CA3AF" axisLine={false} tickLine={false} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#fff' }}
+                                />
+                                <Area type="monotone" dataKey="count" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorCount)" />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                <div className="bg-gray-800 p-8 rounded-3xl border border-gray-700 shadow-xl">
+                    <h2 className="text-xl font-bold mb-8">Distribution Analysis</h2>
+                    <div className="h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={chartData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" vertical={false} />
+                                <XAxis dataKey="name" stroke="#9CA3AF" axisLine={false} tickLine={false} />
+                                <YAxis stroke="#9CA3AF" axisLine={false} tickLine={false} />
+                                <Tooltip 
+                                    contentStyle={{ backgroundColor: '#1F2937', border: 'none', borderRadius: '12px' }}
+                                    itemStyle={{ color: '#fff' }}
+                                />
+                                <Bar dataKey="count" fill="#8B5CF6" radius={[6, 6, 0, 0]} barSize={40} />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             </div>
         </div>
     );
 };
 
-const StatCard = ({ icon, label, value, color }) => (
-    <div className={`p-6 rounded-2xl flex items-center gap-6 ${color} shadow-lg transition-transform hover:scale-105`}>
-        <div className="p-4 bg-white/20 rounded-xl">{icon}</div>
-        <div>
-            <p className="text-white/80 text-sm font-medium">{label}</p>
-            <p className="text-3xl font-bold">{value}</p>
+const StatCard = ({ icon, label, value, trend, color }) => {
+    const colors = {
+        blue: 'text-blue-500 bg-blue-500/10 border-blue-500/20',
+        green: 'text-green-500 bg-green-500/10 border-green-500/20',
+        purple: 'text-purple-500 bg-purple-500/10 border-purple-500/20',
+        orange: 'text-orange-500 bg-orange-500/10 border-orange-500/20',
+    };
+
+    return (
+        <div className="bg-gray-800 p-6 rounded-3xl border border-gray-700 shadow-lg relative overflow-hidden group hover:border-gray-600 transition-all">
+            <div className="flex items-center justify-between mb-4">
+                <div className={`p-3 rounded-2xl ${colors[color]} border`}>
+                    {icon}
+                </div>
+                <span className={`text-xs font-bold px-2 py-1 rounded-full ${trend === 'Live' ? 'bg-red-500/10 text-red-500 animate-pulse' : 'bg-green-500/10 text-green-500'}`}>
+                    {trend}
+                </span>
+            </div>
+            <p className="text-gray-400 text-sm font-medium">{label}</p>
+            <p className="text-3xl font-bold mt-1">{value}</p>
         </div>
-    </div>
-);
+    );
+};
 
 export default Dashboard;
