@@ -40,8 +40,19 @@ export const getStats = async (req, res) => {
 
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find().select('-password');
-        res.json({ success: true, users });
+        const users = await User.find().select('-password').lean();
+        
+        // Add message counts for each user
+        const usersWithStats = await Promise.all(users.map(async (user) => {
+            const count = await Message.countDocuments({ senderId: user._id });
+            return {
+                ...user,
+                messageCount: count,
+                friendsCount: user.friends ? user.friends.length : 0
+            };
+        }));
+        
+        res.json({ success: true, users: usersWithStats });
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
     }
